@@ -538,5 +538,10 @@
         "alreadyCheckedIn": "今天已签到",
         "failed": "签到失败",
         "networkError": "网络错误"
+    },
+    "update": {
+        "available": "新版本可用",
+        "versionInfo": "当前: {{current}} → 最新: {{latest}}",
+        "syncNow": "去 GitHub 同步更新"
     }
 }

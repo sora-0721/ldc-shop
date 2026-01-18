@@ -538,5 +538,10 @@
         "alreadyCheckedIn": "Already checked in today",
         "failed": "Check-in failed",
         "networkError": "Network error"
+    },
+    "update": {
+        "available": "Update Available",
+        "versionInfo": "Current: {{current}} → Latest: {{latest}}",
+        "syncNow": "Sync on GitHub"
     }
 }

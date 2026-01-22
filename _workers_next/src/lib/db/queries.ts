@@ -45,12 +45,30 @@ async function ensureIndexes() {
         `CREATE UNIQUE INDEX IF NOT EXISTS wishlist_votes_item_user_uq ON wishlist_votes(item_id, user_id)`,
     ];
 
+    // Pre-cleanup duplicates for broadcast_reads to prevent unique index failure
+    try {
+        await db.run(sql`
+            DELETE FROM broadcast_reads 
+            WHERE id NOT IN (
+                SELECT MIN(id) 
+                FROM broadcast_reads 
+                GROUP BY message_id, user_id
+            )
+        `);
+    } catch {
+        // Ignore cleanup errors (e.g. table doesn't exist yet)
+    }
+
     for (const statement of indexStatements) {
         try {
             await db.run(sql.raw(statement));
         } catch (e: any) {
             const errorString = (JSON.stringify(e) + String(e) + (e?.message || '')).toLowerCase();
             if (errorString.includes('no such table') || errorString.includes('does not exist')) {
+                continue;
+            }
+            // Ignore "index already exists" or constraint failures if we assume cleanup worked or index exists
+            if (errorString.includes('already exists') || errorString.includes('constraint failed')) {
                 continue;
             }
             throw e;

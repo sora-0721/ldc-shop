@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { StarRatingStatic } from "@/components/star-rating-static"
 import { NavigationPill } from "@/components/navigation-pill"
+import { CheckInButton } from "@/components/checkin-button"
 import { useI18n } from "@/lib/i18n/context"
 import { INFINITE_STOCK } from "@/lib/constants"
 
@@ -47,11 +48,25 @@ interface HomeContentProps {
     categoryConfig?: Array<{ name: string; icon: string | null; sortOrder: number }>
     pendingOrders?: Array<{ orderId: string; createdAt: Date; productName: string; amount: string }>
     wishlistEnabled?: boolean
+    isLoggedIn?: boolean
+    checkinEnabled?: boolean
     filters: { q?: string; category?: string | null; sort?: string }
     pagination: { page: number; pageSize: number; total: number }
 }
 
-export function HomeContent({ products, announcement, visitorCount, categories = [], categoryConfig, pendingOrders, wishlistEnabled = false, filters, pagination }: HomeContentProps) {
+export function HomeContent({
+    products,
+    announcement,
+    visitorCount,
+    categories = [],
+    categoryConfig,
+    pendingOrders,
+    wishlistEnabled = false,
+    isLoggedIn = false,
+    checkinEnabled = true,
+    filters,
+    pagination,
+}: HomeContentProps) {
     const { t } = useI18n()
     const [selectedCategory, setSelectedCategory] = useState<string | null>(filters.category || null)
     const [searchTerm, setSearchTerm] = useState(filters.q || "")
@@ -180,6 +195,13 @@ export function HomeContent({ products, announcement, visitorCount, categories =
                             </p>
                         </div>
                         <div className="flex shrink-0 items-center gap-3">
+                            {isLoggedIn && (
+                                <CheckInButton
+                                    enabled={checkinEnabled}
+                                    showCheckedInLabel
+                                    className="hidden md:flex"
+                                />
+                            )}
                             {typeof visitorCount === "number" && (
                                 <div className="inline-flex items-center gap-2 rounded-full border border-border/40 bg-background/60 px-3.5 py-2 text-sm backdrop-blur-sm">
                                     <Users className="h-3.5 w-3.5 text-primary" />
@@ -367,7 +389,7 @@ export function HomeContent({ products, announcement, visitorCount, categories =
                                         <div className="flex items-end justify-between gap-4">
                                             <div className="min-w-0">
                                                 <div className="flex flex-wrap items-baseline gap-2">
-                                                    <span className="whitespace-nowrap text-2xl font-semibold tracking-tight text-foreground tabular-nums">
+                                                    <span className="whitespace-nowrap text-2xl font-semibold tracking-tight text-primary tabular-nums">
                                                         {Number(product.price)}
                                                     </span>
                                                     <span className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
